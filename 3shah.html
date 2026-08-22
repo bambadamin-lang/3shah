@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anjoman&family=Lalezar&display=swap"
+    rel="stylesheet"
+  >
+
+  <title>شمارش معکوس</title>
+
+  <style>
+    body {
+      font-family: "Anjoman", Tahoma, Arial, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box-wrapper {
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 5vw;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 25px #e5d092;
+      overflow: hidden;
+    }
+
+    .box-wrapper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          to top,
+          rgba(255, 255, 255, 1),
+          rgba(255, 255, 255, 0)
+        ),
+        url("https://uploadkon.ir/uploads/198621_26logo-bahareno-300x300.png")
+        center / contain no-repeat;
+      opacity: 0.9;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .box-wrapper > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .countdown-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+      flex-wrap: wrap;
+      margin-bottom: 1em;
+      direction: ltr;
+    }
+
+    .time-box {
+      /* رنگ پیش‌فرض سایه روز */
+      --glow-color: 229, 208, 146;
+
+      backdrop-filter: blur(3px) saturate(140%);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 0.6em 1em;
+      min-width: 60px;
+      flex: 1;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+      animation: boxGlow 1.75s ease-in-out infinite;
+    }
+
+    /* سایه روز: طلایی */
+    .time-box:nth-child(1) {
+      --glow-color: 229, 208, 146;
+    }
+
+    /* سایه ساعت: سبز */
+    .time-box:nth-child(2) {
+      --glow-color: 36, 189, 122;
+    }
+
+    /* سایه دقیقه: خاکستری */
+    .time-box:nth-child(3) {
+      --glow-color: 128, 128, 128;
+    }
+
+    /* سایه ثانیه: قرمز */
+    .time-box:nth-child(4) {
+      --glow-color: 255, 45, 45;
+    }
+
+    .time-box:hover {
+      box-shadow: 0 0 25px rgba(var(--glow-color), 0.95);
+      transform: scale(1.05);
+    }
+
+    .time-box span:first-child {
+      font-family: "Lalezar", cursive;
+      font-size: 1.8em;
+      font-weight: bold;
+      display: block;
+      animation: neonGlow 1.75s ease-in-out infinite;
+    }
+
+    .time-box span:last-child {
+      font-family: "Lalezar", cursive;
+      font-size: 0.9em;
+      font-weight: bold;
+      opacity: 0.9;
+    }
+
+    @keyframes neonGlow {
+      0%,
+      100% {
+        text-shadow:
+          0 0 2px #e5d092,
+          0 0 4px #e5d092,
+          0 0 6px #e5d092;
+      }
+
+      50% {
+        text-shadow:
+          0 0 5px #e5d092,
+          0 0 10px #e5d092,
+          0 0 15px #e5d092,
+          0 0 20px #e5d092,
+          0 0 25px #e5d092;
+      }
+    }
+
+    @keyframes boxGlow {
+      0%,
+      100% {
+        box-shadow: 0 2px 8px rgba(var(--glow-color), 0.75);
+      }
+
+      25%,
+      75% {
+        box-shadow: 0 4px 16px rgba(var(--glow-color), 0.85);
+      }
+
+      50% {
+        box-shadow: 0 6px 24px rgba(var(--glow-color), 1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .box-wrapper {
+        padding: 30px 15px;
+      }
+
+      .time-box {
+        padding: 0.5em;
+        min-width: 50px;
+      }
+
+      .time-box span:first-child {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box-wrapper">
+    <div class="countdown-flex">
+      <div class="time-box">
+        <span id="days">۰</span>
+        <span>روز</span>
+      </div>
+
+      <div class="time-box">
+        <span id="hours">۰۰</span>
+        <span>ساعت</span>
+      </div>
+
+      <div class="time-box">
+        <span id="minutes">۰۰</span>
+        <span>دقیقه</span>
+      </div>
+
+      <div class="time-box">
+        <span id="seconds">۰۰</span>
+        <span>ثانیه</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function persianDigits(value) {
+      const digits = {
+        0: "۰",
+        1: "۱",
+        2: "۲",
+        3: "۳",
+        4: "۴",
+        5: "۵",
+        6: "۶",
+        7: "۷",
+        8: "۸",
+        9: "۹"
+      };
+
+      return value.toString().replace(/\d/g, digit => digits[digit]);
+    }
+
+    const targetTime = 1764603001000;
+
+    const daysElement = document.getElementById("days");
+    const hoursElement = document.getElementById("hours");
+    const minutesElement = document.getElementById("minutes");
+    const secondsElement = document.getElementById("seconds");
+
+    function displayTime(days, hours, minutes, seconds) {
+      daysElement.textContent = persianDigits(days);
+      hoursElement.textContent = persianDigits(
+        hours.toString().padStart(2, "0")
+      );
+      minutesElement.textContent = persianDigits(
+        minutes.toString().padStart(2, "0")
+      );
+      secondsElement.textContent = persianDigits(
+        seconds.toString().padStart(2, "0")
+      );
+    }
+
+    function updateCountdown() {
+      const remainingMilliseconds = targetTime - Date.now();
+
+      if (remainingMilliseconds <= 0) {
+        displayTime(0, 0, 0, 0);
+        clearInterval(countdownInterval);
+        return;
+      }
+
+      const totalSeconds = Math.floor(remainingMilliseconds / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      displayTime(days, hours, minutes, seconds);
+    }
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
